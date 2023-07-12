@@ -1,0 +1,24 @@
+node('built-in')
+{
+stage('Cont Down')
+{
+    git 'https://github.com/intelliqittrainings/maven.git'
+}
+stage('cont build')
+{
+    sh 'mvn package'
+}
+stage('cont deploy')
+{
+    deploy adapters: [tomcat9(credentialsId: 'ba94b598-7941-481d-8075-1a5ab12651ec', path: '', url: 'http://172.31.22.238:8080')], contextPath: 'testapp', war: '**/*.war'
+}
+stage('cont test')
+{
+    git 'https://github.com/intelliqittrainings/FunctionalTesting.git'
+    sh 'java -jar /var/lib/jenkins/workspace/ScriptedPip/testing.jar'
+}
+stage('cont del')
+{
+    deploy adapters: [tomcat9(credentialsId: 'ba94b598-7941-481d-8075-1a5ab12651ec', path: '', url: 'http://172.31.28.103:8080')], contextPath: 'prodapp', war: '**/*.war'
+}
+}
